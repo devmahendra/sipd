@@ -12,7 +12,7 @@ const getData = async (page, limit, filters = {}, processName) => {
         logData({
             level: 'debug',
             processName,
-            data: `Success retrieve ${result.length} rows`,
+            data: `Success retrieve ${result.totalRecords} rows`,
         });
         return result;
     } catch (error) {
