@@ -5,52 +5,38 @@ const buildLogMessage = require('./buildLogMessage');
 const { formatDate } = require('../../utils/dateFormatter');
 const { incrementSequence } = require('../../helpers/logger/incrementSequence');
 
-const logData = (logObject, mode) => {
+function resolveLogLevel(httpCode, explicitLevel) {
+    if (explicitLevel) return explicitLevel;
+    if (!httpCode || httpCode < 300) return 'info';
+    if (httpCode < 500) return 'warn';
+    return 'error';
+}
+
+function getProcessName(req, explicitName) {
+    return explicitName || req?.routeConfig?.name || 'Unknown Process';
+}
+  
+const logData = (logObject, logTarget = 'default') => {
     const now = new Date();
-
-    // Determine level from httpCode if not explicitly provided
-    let level = logObject.level;
-    if (!level) {
-        const code = logObject.httpCode || 200;
-        level = code >= 500 ? 'error' : code > 200 ? 'warn' : 'info';
-    }
-
-    // Determine processName if not provided
-    let processName = logObject.processName;
-    if (!processName) {
-        processName = logObject.req?.routeConfig?.name || 'Unknown Process';
-    }
-
-    // Determine device if not provided
-    let device = logObject.device;
-    if (!device) {
-        device = 0;
-    }
-
-    // Determine signal if not provided
-    let signal = logObject.signal;
-    if (!signal) {
-        signal = 'N';
-    }
+    const level = resolveLogLevel(logObject.httpCode, logObject.level);
+    const processName = getProcessName(logObject.req, logObject.processName);
+    const device = logObject.device ?? 0;
+    const signal = logObject.signal ?? 'N';
 
     const context = getLogContext({ ...logObject, level, processName, device, signal }, now, formatDate);
     incrementSequence(level);
 
     const message = buildLogMessage(context);
-
-    mainLogger.log({
+    const logPayload = {
         appName: process.env.APP_NAME,
         level,
         message,
         ...context
-    });
+    };
 
-    if (mode === 1) {
-        logstashOnlyLogger.log({
-        appName: process.env.APP_NAME,
-        level,
-        ...context
-        });
+    mainLogger.log(logPayload);
+    if (logTarget === 'logstashInit') {
+        logstashOnlyLogger.log(logPayload);
     }
 };
 

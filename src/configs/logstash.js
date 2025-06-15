@@ -8,9 +8,9 @@ class LogstashTCPTransport extends transports.Stream {
         let retries = 0;
         let processName = 'LOGSTASH_CLIENT';
 
-        const log = (logObject, mode = 2) => {
+        const log = (logObject, logTarget = 'logstashInit') => {
             const { logData } = require('../helpers/logger');
-            logData(logObject, mode);
+            logData(logObject, logTarget);
         };
 
         const connectSocket = () => {
