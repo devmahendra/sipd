@@ -4,23 +4,19 @@ const approveRepository = require('../repositories/approveRepository');
 const { logData } = require('../helpers/logger');
 const { HttpError } = require('../helpers/response/responseHandler');
 const { handlePostgresError } = require('../helpers/database/databaseHandler');
+const { handleServiceError } = require('../helpers/response/responseHandler');
 
 const getData = async (page, limit, filters = {}, processName) => {
     try {
         const result = await approveRepository.getData(page, limit, filters);
         logData({
+            level: 'debug',
             processName,
             data: `Success retrieve ${result.length} rows`,
         });
         return result;
     } catch (error) {
-        const handledError = handlePostgresError(error);
-        logData({
-            level: 'error',
-            processName,
-            data: handledError.message,
-        });
-        throw error;
+        handleServiceError(error, processName);
     }
 };
 
@@ -29,18 +25,13 @@ const insertApproval = async (data, client) => {
     try {
         const insertData =  await approveRepository.insertData(data, client);
         logData({
+            level: 'debug',
             processName,
             data: 'success insert approval data',
         });
         return insertData;
     } catch (error) {
-        const handledError = handlePostgresError(error);
-        logData({
-            level: 'error',
-            processName,
-            data: handledError.message,
-        });
-        throw error;
+        handleServiceError(error, processName);
     }
 };
 
@@ -82,6 +73,7 @@ const approveData = async (approvalId, approvedBy, status, processName) => {
         await client.query('COMMIT');
 
         logData({
+            level: 'debug',
             processName,
             data: `Approved ${entityName} ID: ${entityId} by user: ${approvedBy}`,
         });
@@ -95,24 +87,7 @@ const approveData = async (approvalId, approvedBy, status, processName) => {
         };
     } catch (error) {
         await client.query('ROLLBACK');
-    
-        if (error instanceof HttpError) {
-            throw error;
-        }
-    
-        const handledError = error.code ? handlePostgresError(error) : new HttpError(
-            error.message || 'Internal server error',
-            error.status || 500
-        );
-    
-        logData({
-            httpCode: handledError.httpCode,
-            level: 'error',
-            processName,
-            data: `Error approving data: ${handledError.message}`,
-        });
-    
-        throw handledError;
+        handleServiceError(error, processName);
     } finally {
         client.release();
     }

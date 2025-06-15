@@ -1,5 +1,6 @@
 const responseDefault = require('./responseDefault');
 const { logData } = require('../logger');
+const { handlePostgresError } = require('../../helpers/database/databaseHandler');
 
 /**
  * Custom HTTP error with status code
@@ -12,6 +13,33 @@ class HttpError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
+
+/**
+ * Handle and throw standard HttpError after logging.
+ * Used in service layer try-catch blocks.
+ * 
+ * @param {Error} error - Raw error (Postgres or other)
+ * @param {string} processName - Service process name for logging
+ * @throws {HttpError}
+ */
+const handleServiceError = (error, processName) => {
+    if (error instanceof HttpError) {
+        throw error;
+    }
+
+    const handledError = error.code
+        ? handlePostgresError(error, processName)
+        : new HttpError(error.message || 'Internal server error', error.status || 500);
+
+    logData({
+        httpCode: handledError.httpCode,
+        level: 'error',
+        processName,
+        data: handledError.message,
+    });
+
+    throw handledError;
+};
 
 /**
  * Send success response and log it
@@ -43,4 +71,5 @@ module.exports = {
     respondSuccess,
     respondError,
     HttpError,
+    handleServiceError,
 };

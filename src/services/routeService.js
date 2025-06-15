@@ -3,7 +3,7 @@ const approveService = require('./approveService');
 const routeRepository = require('../repositories/routeRepository');
 const { logData } = require("../helpers/logger");
 const buildApprovalPayload = require('../helpers/approval/buildApprovalPayload');
-const { handlePostgresError } = require('../helpers/database/databaseHandler');
+const { handleServiceError } = require('../helpers/response/responseHandler');
 
 const getData = async (page, limit, filters = {}, processName) => {
     try {
@@ -15,13 +15,7 @@ const getData = async (page, limit, filters = {}, processName) => {
         });
         return result;
     } catch (error) {
-        const handledError = handlePostgresError(error);
-        logData({
-            level: 'error',
-            processName,
-            data: handledError.message,
-        });
-        throw error;
+        handleServiceError(error, processName);
     }
 };
 
@@ -41,15 +35,14 @@ const insertData = async (data, approvalInfo, processName) => {
         );
         await approveService.insertApproval(approvalPayload, client);
         await client.query('COMMIT');
+        logData({
+            level: 'debug',
+            processName,
+            data: `Success inserted data ID: ${insertedData.id} with approval request`,
+        });
     } catch (error) {
         await client.query('ROLLBACK');
-        const handledError = handlePostgresError(error, processName);
-        logData({
-            httpCode: handledError.httpCode,
-            processName,
-            data: handledError.message,
-        });
-        throw handledError;
+        handleServiceError(error, processName);
     } finally {
         client.release();
     }

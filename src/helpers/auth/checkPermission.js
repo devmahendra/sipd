@@ -14,9 +14,8 @@ const hasPermission = (user, menuId, action) => {
     return !!(permission && permission[action]);
 };
 
-const checkPermission = (req, res, permissionType) => {
+const checkPermission = (req, res, permissionType, processName) => {
     const { user, menuId, routeConfig } = req;
-    const processName = routeConfig?.name || "unknown";
     const httpCode = 403;
 
     if (!hasPermission(user, menuId, permissionType)) {

@@ -16,9 +16,9 @@ const getRoutes = async (req, res) => {
 };
 
 const getData = async (req, res) => {
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'r')) return;
-
     const processName = getProcessName(req);
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'r', processName)) return;
+
     const { page, limit } = getPaginationParams(req);
     const filters = req.body.filters || {};
 
@@ -38,9 +38,9 @@ const getData = async (req, res) => {
 };
 
 const insertData = async (req, res) => {
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'c')) return;
-
     const processName = getProcessName(req);
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'c', processName)) return;
+
     const entityNameApproval = 'routes';
     const actionTypeApproval = 'c'; 
     const requestedBy = req.user?.id || 1;
@@ -60,9 +60,9 @@ const insertData = async (req, res) => {
 };
 
 const updateData = async (req, res) => {
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'u')) return;
-
     const processName = getProcessName(req);
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'u', processName)) return;
+
     const entityNameApproval = 'routes';
     const actionTypeApproval = 'u';
     const id = parseInt(req.params.id);
@@ -77,7 +77,6 @@ const updateData = async (req, res) => {
             { entityNameApproval, actionTypeApproval },
             processName
         );
-
         respondSuccess(res, req, 200, processName, "Update request submitted successfully");
     } catch (error) {
         respondError(res, req, 500, processName, error);
@@ -85,9 +84,9 @@ const updateData = async (req, res) => {
 };
 
 const deleteData = async (req, res) => {
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'd')) return;
-
     const processName = getProcessName(req);
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'd', processName)) return;
+
     const entityNameApproval = 'routes';
     const actionTypeApproval = 'd';
     const id = parseInt(req.params.id);
