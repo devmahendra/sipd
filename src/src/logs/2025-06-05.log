@@ -1,0 +1,80 @@
+error 2025-06-05 16:12:58 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP error: connect EADDRNOTAVAIL 192.168.4.38:5044 - Local (172.20.8.101:61760)"}
+info  2025-06-05 16:12:58 processName:LOGSTASH_CLIENT           data:{"message":"Retrying to connect to Logstash in 2000ms (attempt 1/5)"}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 0"}
+error 2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61761)"}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 1"}
+error 2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61762)"}
+warn  2025-06-05 16:12:58 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP socket closed"}
+info  2025-06-05 16:12:58 processName:LOGSTASH_CLIENT           data:{"message":"Retrying to connect to Logstash in 4000ms (attempt 2/5)"}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 2"}
+error 2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61764)"}
+info  2025-06-05 16:12:58 processName:GET_ROUTES                data:{"message":"Loaded 6 routes from database"}
+warn  2025-06-05 16:12:58 processName:GET_ROUTES                data:{"message":"No handler for route GET_APPROVE"}
+warn  2025-06-05 16:12:58 processName:GET_ROUTES                data:{"message":"No handler for route UPDATE_APPROVE"}
+info  2025-06-05 16:12:58 processName:INITIALIZE_SERVICE        data:{"message":"Server running on port 2000"}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 3"}
+error 2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61765)"}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 4"}
+error 2025-06-05 16:12:58 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61766)"}
+warn  2025-06-05 16:12:59 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:12:59 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 5"}
+error 2025-06-05 16:12:59 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61767)"}
+warn  2025-06-05 16:12:59 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:12:59 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 6"}
+error 2025-06-05 16:12:59 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61768)"}
+error 2025-06-05 16:13:00 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP error: connect EADDRNOTAVAIL 192.168.4.38:5044 - Local (172.20.8.101:61769)"}
+info  2025-06-05 16:13:00 processName:LOGSTASH_CLIENT           data:{"message":"Retrying to connect to Logstash in 6000ms (attempt 3/5)"}
+warn  2025-06-05 16:13:00 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP socket closed"}
+info  2025-06-05 16:13:00 processName:LOGSTASH_CLIENT           data:{"message":"Retrying to connect to Logstash in 8000ms (attempt 4/5)"}
+warn  2025-06-05 16:13:00 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:13:00 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 7"}
+error 2025-06-05 16:13:00 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61770)"}
+warn  2025-06-05 16:13:01 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:13:01 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 8"}
+error 2025-06-05 16:13:01 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61771)"}
+warn  2025-06-05 16:13:01 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:13:01 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 9"}
+error 2025-06-05 16:13:01 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61772)"}
+error 2025-06-05 16:13:02 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP error: connect EADDRNOTAVAIL 192.168.4.38:5044 - Local (172.20.8.101:61773)"}
+info  2025-06-05 16:13:02 processName:LOGSTASH_CLIENT           data:{"message":"Retrying to connect to Logstash in 10000ms (attempt 5/5)"}
+warn  2025-06-05 16:13:02 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP socket closed"}
+error 2025-06-05 16:13:02 processName:LOGSTASH_CLIENT           data:{"message":"Max retry attempts reached. Giving up on Logstash connection."}
+warn  2025-06-05 16:13:02 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+warn  2025-06-05 16:13:02 processName:REDIS_CLIENT              data:{"message":"Retrying Redis connection... attempt 10"}
+error 2025-06-05 16:13:02 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61774)"}
+warn  2025-06-05 16:13:03 processName:REDIS_CLIENT              data:{"message":"Redis client reconnecting..."}
+error 2025-06-05 16:13:03 processName:REDIS_CLIENT              data:{"message":"Too many Redis reconnect attempts. Giving up. Reconnect failed."}
+error 2025-06-05 16:13:03 processName:REDIS_CLIENT              data:{"message":"Redis client error: connect EADDRNOTAVAIL 192.168.4.38:6379 - Local (172.20.8.101:61775)"}
+error 2025-06-05 16:13:03 processName:REDIS_CLIENT              data:{"message":"Redis connection failed: Redis reconnect failed"}
+error 2025-06-05 16:13:06 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP error: connect EADDRNOTAVAIL 192.168.4.38:5044 - Local (172.20.8.101:61776)"}
+error 2025-06-05 16:13:06 processName:LOGSTASH_CLIENT           data:{"message":"Max retry attempts reached. Giving up on Logstash connection."}
+warn  2025-06-05 16:13:06 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP socket closed"}
+error 2025-06-05 16:13:06 processName:LOGSTASH_CLIENT           data:{"message":"Max retry attempts reached. Giving up on Logstash connection."}
+error 2025-06-05 16:13:08 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP error: connect EADDRNOTAVAIL 192.168.4.38:5044 - Local (172.20.8.101:61777)"}
+error 2025-06-05 16:13:08 processName:LOGSTASH_CLIENT           data:{"message":"Max retry attempts reached. Giving up on Logstash connection."}
+warn  2025-06-05 16:13:08 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP socket closed"}
+error 2025-06-05 16:13:08 processName:LOGSTASH_CLIENT           data:{"message":"Max retry attempts reached. Giving up on Logstash connection."}
+error 2025-06-05 16:13:12 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP error: connect EADDRNOTAVAIL 192.168.4.38:5044 - Local (172.20.8.101:61779)"}
+error 2025-06-05 16:13:12 processName:LOGSTASH_CLIENT           data:{"message":"Max retry attempts reached. Giving up on Logstash connection."}
+warn  2025-06-05 16:13:12 processName:LOGSTASH_CLIENT           data:{"message":"Logstash TCP socket closed"}
+error 2025-06-05 16:13:12 processName:LOGSTASH_CLIENT           data:{"message":"Max retry attempts reached. Giving up on Logstash connection."}
+info  2025-06-05 16:22:11 processName:LOGSTASH_CLIENT           data:{"message":"Connected to Logstash at 192.168.4.38:5044"}
+info  2025-06-05 16:22:11 processName:REDIS_CLIENT              data:{"message":"Redis attempting connection..."}
+info  2025-06-05 16:22:11 processName:REDIS_CLIENT              data:{"message":"Redis is ready!"}
+info  2025-06-05 16:22:11 processName:REDIS_CLIENT              data:{"message":"Redis connected successfully"}
+info  2025-06-05 16:22:11 processName:GET_ROUTES                data:{"message":"Loaded 6 routes from database"}
+warn  2025-06-05 16:22:11 processName:GET_ROUTES                data:{"message":"No handler for route GET_APPROVE"}
+warn  2025-06-05 16:22:11 processName:GET_ROUTES                data:{"message":"No handler for route UPDATE_APPROVE"}
+info  2025-06-05 16:22:11 processName:INITIALIZE_SERVICE        data:{"message":"Server running on port 2000"}
+info  2025-06-05 16:35:51 processName:LOGSTASH_CLIENT           data:{"message":"Connected to Logstash at 192.168.4.38:5044"}
+info  2025-06-05 16:35:51 processName:REDIS_CLIENT              data:{"message":"Redis attempting connection..."}
+info  2025-06-05 16:35:51 processName:REDIS_CLIENT              data:{"message":"Redis is ready!"}
+info  2025-06-05 16:35:51 processName:REDIS_CLIENT              data:{"message":"Redis connected successfully"}
+info  2025-06-05 16:35:51 processName:GET_ROUTES                data:{"message":"Loaded 6 routes from database"}
+warn  2025-06-05 16:35:51 processName:GET_ROUTES                data:{"message":"No handler for route GET_APPROVE"}
+warn  2025-06-05 16:35:51 processName:GET_ROUTES                data:{"message":"No handler for route UPDATE_APPROVE"}
+info  2025-06-05 16:35:51 processName:INITIALIZE_SERVICE        data:{"message":"Server running on port 2000"}
