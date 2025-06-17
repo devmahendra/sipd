@@ -1,4 +1,3 @@
-// services/approvals/routeApprovalService.js
 const routeRepository = require('../../repositories/routeRepository');
 const { HttpError } = require('../../helpers/response/responseHandler');
 
@@ -10,10 +9,10 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
             await routeRepository.updateStatus(entityId, status, requestedBy, client);
             break;
         case 'u':
-            await routeRepository.updateData(entityId, changes.new, requestedBy, client);
+            await routeRepository.updateData(entityId, changes, status, requestedBy, client);
             break;
         case 'd':
-            await routeRepository.updateStatus(entityId, 3, requestedBy, client);
+            await routeRepository.deleteData(entityId, client);
             break;
         default:
             const httpCode = 404;

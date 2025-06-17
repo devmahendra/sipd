@@ -3,7 +3,7 @@ const approveService = require('./approveService');
 const routeRepository = require('../repositories/routeRepository');
 const { logData } = require("../helpers/logger");
 const buildApprovalPayload = require('../helpers/approval/buildApprovalPayload');
-const { handleServiceError } = require('../helpers/response/responseHandler');
+const { handleServiceError, HttpError } = require('../helpers/response/responseHandler');
 
 const getData = async (page, limit, filters = {}, processName) => {
     try {
@@ -29,11 +29,11 @@ const insertData = async (data, approvalInfo, processName) => {
             approvalInfo.entityNameApproval,
             insertedData.id,
             approvalInfo.actionTypeApproval,
-            data.requestedBy,
+            approvalInfo.requestedBy,
             {},          
             insertedData     
         );
-        await approveService.insertApproval(approvalPayload, client);
+        await approveService.insertApproval(approvalPayload, approvalInfo.pendingStatus, client);
         await client.query('COMMIT');
         logData({
             level: 'debug',
@@ -48,8 +48,79 @@ const insertData = async (data, approvalInfo, processName) => {
     }
 };
 
+const updateData = async (id, newData, approvalInfo, processName) => {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const oldData = await routeRepository.getDataById(id, client);
+        if (!oldData) {
+            throw new HttpError(`Data with ID: ${id} not found`, 404);
+        }
+
+        const approvalPayload = buildApprovalPayload(
+            approvalInfo.entityNameApproval,
+            id,
+            approvalInfo.actionTypeApproval,
+            approvalInfo.requestedBy,
+            oldData, 
+            newData       
+        );
+
+        if (!approvalPayload) {
+            throw new HttpError(`No changes detected. Nothing to update.`, 400);
+        }
+
+        await routeRepository.updateStatus(id, approvalInfo.pendingStatus, approvalInfo.requestedBy, client);
+        await approveService.insertApproval(approvalPayload, approvalInfo.pendingStatus, client);
+
+        await client.query('COMMIT');
+    } catch (error) {
+        await client.query('ROLLBACK');
+        handleServiceError(error, processName);
+    } finally {
+        client.release();
+    }
+};
+
+const deleteData = async (id, requestedBy, pendingStatus, approvalInfo, processName) => {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const oldData = await routeRepository.getDataById(id, client);
+        if (!oldData) {
+            throw new HttpError(`Data with ID: ${id} not found`, 404);
+        }
+
+        const approvalPayload = buildApprovalPayload(
+            approvalInfo.entityNameApproval,
+            id,
+            approvalInfo.actionTypeApproval,
+            requestedBy,
+            oldData,
+            {}
+        );
+
+        await routeRepository.updateStatus(id, pendingStatus, requestedBy, client);
+        await approveService.insertApproval(approvalPayload, pendingStatus, client);
+
+        await client.query('COMMIT');
+    } catch (error) {
+        await client.query('ROLLBACK');
+        handleServiceError(error, processName);
+    } finally {
+        client.release();
+    }
+};
+
+
 
 module.exports = { 
     getData,
     insertData,
+    updateData,
+    deleteData
 };

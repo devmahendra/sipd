@@ -29,7 +29,6 @@ const responseDefault = (httpCode = 200, data = null, req = null) => {
 
     let responseMessage = response.MESSAGE;
 
-    // ✅ Only append `data` if it's not already included
     if (typeof data === 'string' && data.trim()) {
         const trimmedData = data.trim();
         if (!responseMessage.includes(trimmedData)) {

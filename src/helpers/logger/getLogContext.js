@@ -9,10 +9,8 @@ function getLogContext(logObject, now, formatDate) {
     const requestContext = {
         requestId: addPadding(store?.get('requestId'), 36) || 'N/A',
         sequence: currentSeq,
-        
         device: addPadding(logObject.device != null ? logObject.device : store?.get('device'), 5) ?? 0,
         signal: logObject.signal || store?.get('signal') || 'N',
-
         ip: addPadding(store?.get('ip'), 15) || 'N/A',
         method: addPadding(store?.get('method'), 10) || 'N/A',
         path: addPadding(store?.get('path'), 50) || 'N/A',

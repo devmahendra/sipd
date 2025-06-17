@@ -1,19 +1,10 @@
 const routeService = require('../services/routeService');
+const { STATUS_PENDING } = require('../constants/statusType');
 const checkPermission = require('../helpers/auth/checkPermission');
-const getPaginationParams = require('../utils/pagination');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
+const getPaginationParams = require('../utils/pagination');
 
 const getProcessName = (req) => req.routeConfig?.name || 'UnknownProcess';
-
-const getRoutes = async (req, res) => {
-    const processName = getProcessName(req);
-    try {
-        const result = await routeService.getRoutes(processName);
-        respondSuccess(res, req, 200, processName, { data: result });
-    } catch (error) {
-        respondError(res, req, 500, processName, error);
-    }
-};
 
 const getData = async (req, res) => {
     const processName = getProcessName(req);
@@ -43,6 +34,7 @@ const insertData = async (req, res) => {
 
     const entityNameApproval = 'routes';
     const actionTypeApproval = 'c'; 
+    const pendingStatus = STATUS_PENDING;
     const requestedBy = req.user?.id || 1;
     const { name, path, method, isProtected, internal, description, menuId, actionType } = req.body;
     const data = { name, path, method, isProtected, internal, description, menuId, actionType, requestedBy };
@@ -50,7 +42,7 @@ const insertData = async (req, res) => {
     try {
         await routeService.insertData(
             data,
-            { entityNameApproval, actionTypeApproval },
+            { entityNameApproval, actionTypeApproval, pendingStatus, requestedBy },
             processName
         );
         respondSuccess(res, req, 200, processName, "Create request submitted successfully");
@@ -65,21 +57,22 @@ const updateData = async (req, res) => {
 
     const entityNameApproval = 'routes';
     const actionTypeApproval = 'u';
+    const pendingStatus = STATUS_PENDING;
     const id = parseInt(req.params.id);
     const requestedBy = req.user?.id || 1;
-    const { name, path, method, isProtected, internal, description, menuId, actionType } = req.body;
-    const newData = { name, path, method, isProtected, internal, description, menuId, actionType, requestedBy };
+    const { name, path, method, isProtected, internal, description, menuId, actionType, status } = req.body;
+    const newData = { name, path, method, isProtected, internal, description, menuId, actionType, status };
 
     try {
         await routeService.updateData(
             id,
             newData,
-            { entityNameApproval, actionTypeApproval },
+            { entityNameApproval, actionTypeApproval, pendingStatus, requestedBy },
             processName
         );
         respondSuccess(res, req, 200, processName, "Update request submitted successfully");
     } catch (error) {
-        respondError(res, req, 500, processName, error);
+        respondError(res, req, error.httpCode || 500, processName, error);
     }
 };
 
@@ -89,19 +82,25 @@ const deleteData = async (req, res) => {
 
     const entityNameApproval = 'routes';
     const actionTypeApproval = 'd';
+    const pendingStatus = STATUS_PENDING;
     const id = parseInt(req.params.id);
     const requestedBy = req.user?.id || 1;
 
     try {
-        await routeService.updateData(id, requestedBy, { entityNameApproval, actionTypeApproval }, processName);
+        await routeService.deleteData(
+            id,
+            requestedBy,
+            pendingStatus,
+            { entityNameApproval, actionTypeApproval, requestedBy },
+            processName
+        );
         respondSuccess(res, req, 200, processName, "Delete request submitted successfully");
     } catch (error) {
-        respondError(res, req, 500, processName, error);
+        respondError(res, req, error.httpCode || 500, processName, error);
     }
 };
 
 module.exports = { 
-    getRoutes, 
     getData,
     insertData,
     updateData,

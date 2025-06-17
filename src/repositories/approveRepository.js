@@ -41,15 +41,14 @@ const getDataById = async (id, status, client) => {
     return rows[0];
 };
 
-const insertData = async ({ entityName, entityId, actionType, changes, requestedBy, status = 1 }) => {
+const insertData = async ({ entityName, entityId, actionType, changes, requestedBy, pendingStatus }) => {
     const query = `
       INSERT INTO approvals (entity_name, entity_id, action_type, changes, requested_by, status)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id, entity_name, entity_id, status
     `;
   
-    const values = [entityName, entityId, actionType, changes, requestedBy, status];
-  
+    const values = [entityName, entityId, actionType, changes, requestedBy, pendingStatus];
     const { rows } = await pool.query(query, values);
     return rows[0];
 };

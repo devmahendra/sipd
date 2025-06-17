@@ -15,7 +15,7 @@ exports.insertDataSchema = {
         isProtected: Joi.boolean().required(),
         internal: Joi.boolean().required(),
         description: Joi.string().allow('', null),
-        menuId: Joi.number().integer().required(),
+        menuId: Joi.number().integer().allow('', null),
         actionType: Joi.string().valid('c', 'r', 'u', 'd').required()
     }),
 };

@@ -13,7 +13,7 @@ const getRoutes = async () => {
     return rows;
 };
 
-const getRouteById = async (id, client) => {
+const getDataById = async (id, client) => {
     const { rows } = await client.query(`SELECT * FROM routes WHERE id = $1`, [id]);
     return rows[0];
 };
@@ -105,16 +105,18 @@ const updateData = async (id, changes, approvalStatus, requestedBy, client) => {
     }
 
     const dbFields = fields.map(camelToSnake);
-    const setClause = dbFields.map((field, index) => `${field} = $${index + 1}`).join(', ');
+    const setClause = dbFields
+        .map((field, index) => `${field} = $${index + 1}`)
+        .concat('updated_at = NOW()') 
+        .join(', ');
     const query = `UPDATE routes SET ${setClause} WHERE id = $${fields.length + 1}`;
-
     await client.query(query, [...values, id]);
 };
 
 
 module.exports = { 
     getRoutes,
-    getRouteById,
+    getDataById,
     getData,
     insertData,
     deleteData,

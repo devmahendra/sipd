@@ -3,7 +3,6 @@ const entityServiceMap = require('./entityServiceMap');
 const approveRepository = require('../repositories/approveRepository');
 const { logData } = require('../helpers/logger');
 const { HttpError } = require('../helpers/response/responseHandler');
-const { handlePostgresError } = require('../helpers/database/databaseHandler');
 const { handleServiceError } = require('../helpers/response/responseHandler');
 
 const getData = async (page, limit, filters = {}, processName) => {
@@ -20,10 +19,12 @@ const getData = async (page, limit, filters = {}, processName) => {
     }
 };
 
-const insertApproval = async (data, client) => {
+const insertApproval = async (data, pendingStatus, client) => {
     const processName = 'INSERT_APPROVAL';
+    const approvalData = { ...data, pendingStatus};
+
     try {
-        const insertData =  await approveRepository.insertData(data, client);
+        const insertData =  await approveRepository.insertData(approvalData, client);
         logData({
             level: 'debug',
             processName,
@@ -43,10 +44,7 @@ const approveData = async (approvalId, approvedBy, status, processName) => {
 
         const getData = await approveRepository.getDataById(approvalId, status, client);
         if (!getData) {
-            const httpCode = 404;
-            const message = `Approval ID: ${approvalId} not found or already processed`;
-
-            throw new HttpError(message, httpCode);
+            throw new HttpError(`Approval ID: ${approvalId} not found or already processed`, 404);
         }
 
         const {
@@ -60,10 +58,7 @@ const approveData = async (approvalId, approvedBy, status, processName) => {
         const entityService = entityServiceMap[entityName];
 
         if (!entityService || typeof entityService.applyApproval !== 'function') {
-            const httpCode = 404;
-            const message = `Unhandled entity type: ${entityName}`;
-
-            throw new HttpError(message, httpCode);
+            throw new HttpError(`Unhandled entity type: ${entityName}`, 404);
         }
 
         await entityService.applyApproval({ entityId, changes, status, actionType, requestedBy, client });
