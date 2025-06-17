@@ -93,14 +93,15 @@ const updateData = async (id, changes, approvalStatus, requestedBy, client) => {
         throw new Error('No valid data found in changes.new or changes.old');
     }
     
-    const dataToUpdate = { ...source };
+    const dataToUpdate = {};
 
-    const statusChanged = 
-        changes.old?.status !== undefined &&
-        changes.new?.status !== undefined &&
-        changes.old.status !== changes.new.status;
+    for (const [key, value] of Object.entries(source)) {
+        if (value !== null && value !== undefined) {
+            dataToUpdate[key] = value;
+        }
+    }
 
-    if (!statusChanged) {
+    if (!('status' in dataToUpdate)) {
         dataToUpdate.status = approvalStatus;
     }
 
@@ -119,7 +120,10 @@ const updateData = async (id, changes, approvalStatus, requestedBy, client) => {
         .concat('updated_at = NOW()') 
         .join(', ');
     const query = `UPDATE routes SET ${setClause} WHERE id = $${fields.length + 1}`;
-    await client.query(query, [...values, id]);
+    console.log('Update query:', query);
+    console.log('Update values:', [...values, id]);
+    const result = await client.query(query, [...values, id]);
+    console.log('Update result:', result);
 };
 
 

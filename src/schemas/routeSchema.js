@@ -50,15 +50,15 @@ exports.updateDataSchema = {
     id: Joi.number().integer().min(1).required(),
   }),
   body: Joi.object({
-      name: Joi.string().max(100).optional(),
-      path: Joi.string().pattern(/^\/[\w\-\/]*$/).optional(), // must start with /
-      method: Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH').optional(),
-      isProtected: Joi.boolean().optional(),
-      internal: Joi.boolean().optional(),
+      name: Joi.string().max(100).optional().allow('', null),
+      path: Joi.string().pattern(/^\/[\w\-\/]*$/).optional().allow('', null), // must start with /
+      method: Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH').optional().allow('', null),
+      isProtected: Joi.boolean().optional().allow(null),
+      internal: Joi.boolean().optional().allow(null),
       description: Joi.string().allow('', null).optional(),
       menuId: Joi.number().integer().allow(null).optional(),
-      actionType: Joi.string().valid(...ACTIONS).optional(),
-      status: Joi.number().valid(...STATUSES).optional()
+      actionType: Joi.string().valid(...ACTIONS).optional().allow('', null),
+      status: Joi.number().valid(...STATUSES).optional().allow(null),
   }),
 };
 
