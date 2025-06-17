@@ -28,13 +28,13 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
                 break;
 
             case ACTION_UPDATE:
-                // Rollback to previous state
-                await routeRepository.updateData(entityId, changes.old, changes.old.status || STATUS_ACTIVE, requestedBy, client);
-                break;
-
             case ACTION_DELETE:
-                // Restore the deleted status back to active (or previous status)
-                await routeRepository.updateStatus(entityId, changes.old?.status || STATUS_ACTIVE, requestedBy, client);
+                // Rollback to previous state
+                if (changes.old) {
+                    await routeRepository.updateData(entityId, changes.old, changes.old.status || STATUS_ACTIVE, requestedBy, client);
+                } else {
+                    throw new HttpError(`Missing changes.old data for rollback`, 400);
+                }
                 break;
 
             default:
