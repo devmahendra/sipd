@@ -1,5 +1,6 @@
-const routeService = require('../services/routeService');
+const { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, ACTION_DELETE } = require('../constants/actionType');
 const { STATUS_PENDING } = require('../constants/statusType');
+const routeService = require('../services/routeService');
 const checkPermission = require('../helpers/auth/checkPermission');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
 const getPaginationParams = require('../utils/pagination');
@@ -8,10 +9,10 @@ const getProcessName = (req) => req.routeConfig?.name || 'UnknownProcess';
 
 const getData = async (req, res) => {
     const processName = getProcessName(req);
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'r', processName)) return;
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_READ, processName)) return;
 
     const { page, limit } = getPaginationParams(req);
-    const filters = req.body.filters || {};
+    const filters = req.body.filters || [];
 
     try {
         const result = await routeService.getData(page, limit, filters, processName);
@@ -30,10 +31,10 @@ const getData = async (req, res) => {
 
 const insertData = async (req, res) => {
     const processName = getProcessName(req);
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'c', processName)) return;
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_CREATE, processName)) return;
 
     const entityNameApproval = 'routes';
-    const actionTypeApproval = 'c'; 
+    const actionTypeApproval = ACTION_CREATE; 
     const pendingStatus = STATUS_PENDING;
     const requestedBy = req.user?.id || 1;
     const { name, path, method, isProtected, internal, description, menuId, actionType } = req.body;
@@ -53,10 +54,10 @@ const insertData = async (req, res) => {
 
 const updateData = async (req, res) => {
     const processName = getProcessName(req);
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'u', processName)) return;
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_UPDATE, processName)) return;
 
     const entityNameApproval = 'routes';
-    const actionTypeApproval = 'u';
+    const actionTypeApproval = ACTION_UPDATE;
     const pendingStatus = STATUS_PENDING;
     const id = parseInt(req.params.id);
     const requestedBy = req.user?.id || 1;
@@ -78,10 +79,10 @@ const updateData = async (req, res) => {
 
 const deleteData = async (req, res) => {
     const processName = getProcessName(req);
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, 'd', processName)) return;
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_DELETE, processName)) return;
 
     const entityNameApproval = 'routes';
-    const actionTypeApproval = 'd';
+    const actionTypeApproval = ACTION_DELETE;
     const pendingStatus = STATUS_PENDING;
     const id = parseInt(req.params.id);
     const requestedBy = req.user?.id || 1;

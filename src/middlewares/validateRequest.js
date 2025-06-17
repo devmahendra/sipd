@@ -7,7 +7,6 @@ const validateRequest = (route) => (req, res, next) => {
     try {
         if (!route.validation) return next();
 
-        // Support body, query, and params
         const sources = ["body", "query", "params"];
         for (const source of sources) {
             if (route.validation[source]) {
@@ -22,7 +21,6 @@ const validateRequest = (route) => (req, res, next) => {
             }
         }
 
-        // Validation passed
         return next();
     } catch (error) {
         return respondError(res, req, 500, processName, { error: error.message });

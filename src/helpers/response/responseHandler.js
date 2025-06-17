@@ -63,9 +63,10 @@ const respondSuccess = (res, req, httpCode, processName, data) => {
  * @param {Error|string|object} error - Error details
  */
 const respondError = (res, req, httpCode, processName, error) => {
+
     const message = typeof error === 'string'
         ? error
-        : error.message || 'Internal server error';
+        : error.message || error || 'Internal Server Error';
 
     logData({ req, httpCode, processName, data: message });
 

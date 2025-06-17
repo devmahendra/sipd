@@ -84,7 +84,16 @@ const updateStatus = async (id, status, updatedBy, client) => {
 };
 
 const updateData = async (id, changes, approvalStatus, requestedBy, client) => {
-    const changesCleaned = { ...changes.new };
+    if (!changes || typeof changes !== 'object') {
+        throw new Error('Invalid changes object provided');
+    }
+
+    const source = changes.new || changes.old || changes;
+    if (!source || Object.keys(source).length === 0) {
+        throw new Error('No valid data found in changes.new or changes.old');
+    }
+    
+    const dataToUpdate = { ...source };
 
     const statusChanged = 
         changes.old?.status !== undefined &&
@@ -92,13 +101,13 @@ const updateData = async (id, changes, approvalStatus, requestedBy, client) => {
         changes.old.status !== changes.new.status;
 
     if (!statusChanged) {
-        changesCleaned.status = approvalStatus;
+        dataToUpdate.status = approvalStatus;
     }
 
-    changesCleaned.updated_by = requestedBy;
+    dataToUpdate.updated_by = requestedBy;
 
-    const fields = Object.keys(changesCleaned);
-    const values = Object.values(changesCleaned);
+    const fields = Object.keys(dataToUpdate);
+    const values = Object.values(dataToUpdate);
 
     if (fields.length === 0) {
         throw new Error('No changes provided to update route');

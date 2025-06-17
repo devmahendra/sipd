@@ -11,5 +11,6 @@ module.exports = {
     STATUS_PROCESSED_FAILED: 10,
     STATUS_PROCESSED_TIMEOUT: 11,
     STATUS_PROCESSED_PARTIALLY: 12,
+    STATUSES: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], // array version for Joi `.valid(...)`
 };
   

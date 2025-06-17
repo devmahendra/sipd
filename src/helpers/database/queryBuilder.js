@@ -3,34 +3,42 @@
  * Supports operators: ilike (default), =, >, <, >=, <=, between.
  *
  * @param {Object} filters - Key-value pairs of filters. Example:
- * {
- * "page": 1,
- *   "limit": 10,
- *   "filters": {
- *     "route_name": { "value": "admin", "operator": "ilike" },
- *     "is_active": { "value": true, "operator": "=" },
- *     "created_at": { "value": ["2024-01-01", "2024-12-31"], "operator": "between" }
- *   }
- * }
- *
- * @returns {Object} { whereClause: string, values: Array<any> }
+ {
+    "page": 1,
+    "limit": 10,
+    "filters": [
+        {
+            "field": "name",
+            "value": "GET_ROUTE",
+            "operator": "ilike"
+        },
+        {
+            "field": "created_at",
+            "value": [
+                "2025-01-01",
+                "2025-12-31"
+            ],
+            "operator": "between"
+        }
+    ]
+ }
  */
-const buildWhereClause = (filters = {}) => {
+const buildWhereClause = (filters = []) => {
     const conditions = [];
     const values = [];
     let index = 1;
 
-    for (const [field, filter] of Object.entries(filters)) {
-        if (!filter || filter.value === undefined || filter.value === null || filter.value === '') {
-            continue;
-        }
+    for (const filter of filters) {
+        const { field, operator = 'ilike', value } = filter;
 
-        const operator = (filter.operator || 'ilike').toLowerCase();
+        if (value === undefined || value === null || value === '') continue;
 
-        switch (operator) {
+        const op = operator.toLowerCase();
+
+        switch (op) {
             case 'ilike':
                 conditions.push(`${field} ILIKE $${index}`);
-                values.push(`%${filter.value}%`);
+                values.push(`%${value}%`);
                 index++;
                 break;
 
@@ -39,21 +47,21 @@ const buildWhereClause = (filters = {}) => {
             case '<':
             case '>=':
             case '<=':
-                conditions.push(`${field} ${operator} $${index}`);
-                values.push(filter.value);
+                conditions.push(`${field} ${op} $${index}`);
+                values.push(value);
                 index++;
                 break;
 
             case 'between':
-                if (Array.isArray(filter.value) && filter.value.length === 2) {
+                if (Array.isArray(value) && value.length === 2) {
                     conditions.push(`${field} BETWEEN $${index} AND $${index + 1}`);
-                    values.push(filter.value[0], filter.value[1]);
+                    values.push(value[0], value[1]);
                     index += 2;
                 }
                 break;
 
             default:
-                throw new Error(`Unsupported operator: ${operator}`);
+                throw new Error(`Unsupported operator: ${op}`);
         }
     }
 
