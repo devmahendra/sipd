@@ -1,41 +1,47 @@
 const { STATUS_ACTIVE, STATUS_REJECTED } = require('../../constants/statusType');
 const { ACTION_CREATE, ACTION_UPDATE, ACTION_DELETE } = require('../../constants/actionType');
+const { filterValidFields } = require('../../helpers/database/dataSanitizer');
 const routeRepository = require('../../repositories/routeRepository');
 const { HttpError } = require('../../helpers/response/responseHandler');
 
 const applyApproval = async ({ entityId, changes, status, actionType, requestedBy, client }) => {
+    const prepareUpdatePayload = (rawData) => {
+        const cleaned = filterValidFields(rawData);
+        return {
+            ...cleaned,
+            status,
+            updated_by: requestedBy,
+        };
+    };
+
     if (status === STATUS_ACTIVE) {
         switch (actionType) {
             case ACTION_CREATE:
-                await routeRepository.updateStatus(entityId, status, requestedBy, client);
-                break;
+                return await routeRepository.updateStatus(entityId, status, requestedBy, client);
 
             case ACTION_UPDATE:
-                await routeRepository.updateData(entityId, changes.new, status, requestedBy, client);
-                break;
+                return await routeRepository.updateData(entityId, prepareUpdatePayload(changes?.new), client);
 
             case ACTION_DELETE:
-                await routeRepository.deleteData(entityId, client);
-                break;
+                return await routeRepository.deleteData(entityId, client);
 
             default:
                 throw new HttpError(`Unknown action type: ${actionType}`, 404);
         }
-    } else if (status === STATUS_REJECTED) {
+    }
+
+    if (status === STATUS_REJECTED) {
         switch (actionType) {
             case ACTION_CREATE:
-                await routeRepository.deleteData(entityId, client);
-                break;
+                return await routeRepository.deleteData(entityId, client);
 
             case ACTION_UPDATE:
             case ACTION_DELETE:
-                // Rollback to previous state
-                if (changes.old) {
-                    await routeRepository.updateData(entityId, changes.old, changes.old.status || STATUS_ACTIVE, requestedBy, client);
-                } else {
+                if (!changes?.old) {
                     throw new HttpError(`Missing changes.old data for rollback`, 400);
                 }
-                break;
+
+                return await routeRepository.updateData(entityId, prepareUpdatePayload(changes.old), client);
 
             default:
                 throw new HttpError(`Unknown action type: ${actionType}`, 404);

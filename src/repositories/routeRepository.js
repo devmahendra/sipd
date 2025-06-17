@@ -83,47 +83,22 @@ const updateStatus = async (id, status, updatedBy, client) => {
     await client.query(query, [status, updatedBy, id]);
 };
 
-const updateData = async (id, changes, approvalStatus, requestedBy, client) => {
-    if (!changes || typeof changes !== 'object') {
-        throw new Error('Invalid changes object provided');
-    }
-
-    const source = changes.new || changes.old || changes;
-    if (!source || Object.keys(source).length === 0) {
-        throw new Error('No valid data found in changes.new or changes.old');
-    }
-    
-    const dataToUpdate = {};
-
-    for (const [key, value] of Object.entries(source)) {
-        if (value !== null && value !== undefined) {
-            dataToUpdate[key] = value;
-        }
-    }
-
-    if (!('status' in dataToUpdate)) {
-        dataToUpdate.status = approvalStatus;
-    }
-
-    dataToUpdate.updated_by = requestedBy;
-
-    const fields = Object.keys(dataToUpdate);
-    const values = Object.values(dataToUpdate);
+const updateData = async (id, data, client) => {
+    const fields = Object.keys(data);
+    const values = Object.values(data);
 
     if (fields.length === 0) {
-        throw new Error('No changes provided to update route');
+        throw new Error('No fields to update');
     }
 
     const dbFields = fields.map(camelToSnake);
     const setClause = dbFields
-        .map((field, index) => `${field} = $${index + 1}`)
-        .concat('updated_at = NOW()') 
+        .map((field, i) => `${field} = $${i + 1}`)
+        .concat('updated_at = NOW()')
         .join(', ');
+
     const query = `UPDATE routes SET ${setClause} WHERE id = $${fields.length + 1}`;
-    console.log('Update query:', query);
-    console.log('Update values:', [...values, id]);
-    const result = await client.query(query, [...values, id]);
-    console.log('Update result:', result);
+    await client.query(query, [...values, id]);
 };
 
 
