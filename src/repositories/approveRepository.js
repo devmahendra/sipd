@@ -1,11 +1,11 @@
 const pool = require('../configs/db');
 const { buildWhereClause } = require('../helpers/database/queryBuilder');
 
-const getData = async (page, limit, filters = {}) => {
+const getData = async (page, limit, formattedFilters = []) => {
     try {
         const offset = (page - 1) * limit;
 
-        const { whereClause, values: filterValues } = buildWhereClause(filters);
+        const { whereClause, values: filterValues } = buildWhereClause(formattedFilters);
         const paginationValues = [...filterValues, limit, offset];
 
         const dataQuery = `

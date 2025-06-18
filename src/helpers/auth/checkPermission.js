@@ -15,7 +15,7 @@ const hasPermission = (user, menuId, action) => {
 };
 
 const checkPermission = (req, res, permissionType, processName) => {
-    const { user, menuId, routeConfig } = req;
+    const { user, menuId } = req;
     const httpCode = 403;
 
     if (!hasPermission(user, menuId, permissionType)) {
@@ -26,7 +26,7 @@ const checkPermission = (req, res, permissionType, processName) => {
             data: message,
             httpCode,
         });
-        res.status(httpCode).json(defaultResponse("FORBIDDEN", null, req));
+        res.status(httpCode).json(defaultResponse("FORBIDDEN", message, req));
         return false;
     }
 

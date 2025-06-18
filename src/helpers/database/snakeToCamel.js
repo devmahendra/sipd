@@ -17,7 +17,12 @@ const snakeToCamelObject = (obj = {}) => {
     );
 };
 
+const snakeToCamelArray = (arr = []) => {
+    return arr.map(snakeToCamelObject);
+};
+
 module.exports = {
     snakeToCamel,
     snakeToCamelObject,
+    snakeToCamelArray
 };

@@ -18,11 +18,11 @@ const getDataById = async (id, client) => {
     return rows[0];
 };
 
-const getData = async (page, limit, filters = {}) => {
+const getData = async (page, limit, formattedFilters = []) => {
     try {
         const offset = (page - 1) * limit;
 
-        const { whereClause, values: filterValues } = buildWhereClause(filters);
+        const { whereClause, values: filterValues } = buildWhereClause(formattedFilters);
         const paginationValues = [...filterValues, limit, offset];
 
         const dataQuery = `

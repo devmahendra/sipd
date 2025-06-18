@@ -4,6 +4,8 @@ const routeService = require('../services/routeService');
 const checkPermission = require('../helpers/auth/checkPermission');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
 const getPaginationParams = require('../utils/pagination');
+const { snakeToCamelArray } = require('../helpers/database/snakeToCamel');
+const { convertFilterFieldsToSnakeCase } = require('../helpers/database/camelToSnake');
 
 const getProcessName = (req) => req.routeConfig?.name || 'UnknownProcess';
 
@@ -13,11 +15,13 @@ const getData = async (req, res) => {
 
     const { page, limit } = getPaginationParams(req);
     const filters = req.body.filters || [];
+    const formattedFilters = convertFilterFieldsToSnakeCase(filters);
 
     try {
-        const result = await routeService.getData(page, limit, filters, processName);
+        const result = await routeService.getData(page, limit, formattedFilters, processName);
+        const formattedData = snakeToCamelArray(result.data);
         respondSuccess(res, req, 200, processName, {
-            data: result.data,
+            data: formattedData,
             pagination: {
                 totalRecords: result.totalRecords,
                 totalPages: result.totalPages,

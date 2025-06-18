@@ -5,9 +5,9 @@ const { logData } = require("../helpers/logger");
 const buildApprovalPayload = require('../helpers/approval/buildApprovalPayload');
 const { handleServiceError, HttpError } = require('../helpers/response/responseHandler');
 
-const getData = async (page, limit, filters = {}, processName) => {
+const getData = async (page, limit, formattedFilters = [], processName) => {
     try {
-        const result = await routeRepository.getData(page, limit, filters);
+        const result = await routeRepository.getData(page, limit, formattedFilters);
         logData({
             level: 'debug',
             processName,

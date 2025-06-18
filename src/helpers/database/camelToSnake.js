@@ -6,6 +6,13 @@
 const camelToSnake = (str) =>
     str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
+const convertFilterFieldsToSnakeCase = (filters = []) =>
+    filters.map(({ field, ...rest }) => ({
+        field: camelToSnake(field),
+        ...rest,
+    }));
+
 module.exports = {
     camelToSnake,
+    convertFilterFieldsToSnakeCase
 };

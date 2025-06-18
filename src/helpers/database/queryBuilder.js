@@ -23,12 +23,12 @@
     ]
  }
  */
-const buildWhereClause = (filters = []) => {
+const buildWhereClause = (formattedFilters = []) => {
     const conditions = [];
     const values = [];
     let index = 1;
 
-    for (const filter of filters) {
+    for (const filter of formattedFilters) {
         const { field, operator = 'ilike', value } = filter;
 
         if (value === undefined || value === null || value === '') continue;

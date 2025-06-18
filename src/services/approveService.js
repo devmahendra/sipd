@@ -5,9 +5,9 @@ const { logData } = require('../helpers/logger');
 const { HttpError } = require('../helpers/response/responseHandler');
 const { handleServiceError } = require('../helpers/response/responseHandler');
 
-const getData = async (page, limit, filters = {}, processName) => {
+const getData = async (page, limit, formattedFilters = [], processName) => {
     try {
-        const result = await approveRepository.getData(page, limit, filters);
+        const result = await approveRepository.getData(page, limit, formattedFilters);
         logData({
             level: 'debug',
             processName,
