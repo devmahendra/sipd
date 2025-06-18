@@ -40,14 +40,10 @@ exports.getDataIdSchema = {
 
 exports.insertDataSchema = {
     body: Joi.object({
-        name: Joi.string().max(100).required(),
-        path: Joi.string().pattern(/^\/[\w\-\/]*$/).required(), // must start with /
-        method: Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH').required(),
-        isProtected: Joi.boolean().required(),
-        internal: Joi.boolean().required(),
+        name: Joi.string().max(50).required(),
+        bankCode: Joi.string().min(1).max(3).required(),
+        bankSwift: Joi.string().min(1).max(20).required(),
         description: Joi.string().allow('', null).optional(),
-        menuId: Joi.number().integer().allow(null).optional(),
-        actionType: Joi.string().valid(...ACTIONS).required()
     }),
 };
 
@@ -56,14 +52,10 @@ exports.updateDataSchema = {
         id: Joi.number().integer().min(1).required(),
     }),
     body: Joi.object({
-        name: Joi.string().max(100).optional().allow('', null),
-        path: Joi.string().pattern(/^\/[\w\-\/]*$/).optional().allow('', null), // must start with /
-        method: Joi.string().valid('GET', 'POST', 'PUT', 'DELETE', 'PATCH').optional().allow('', null),
-        isProtected: Joi.boolean().optional().allow(null),
-        internal: Joi.boolean().optional().allow(null),
+        name: Joi.string().max(50).allow('', null).optional(),
+        bankCode: Joi.string().min(1).max(3).allow('', null).optional(), 
+        bankSwift: Joi.string().min(1).max(20).allow('', null).optional(),
         description: Joi.string().allow('', null).optional(),
-        menuId: Joi.number().integer().allow(null).optional(),
-        actionType: Joi.string().valid(...ACTIONS).optional().allow('', null),
         status: Joi.number().valid(...STATUSES).optional().allow(null),
     }),
 };

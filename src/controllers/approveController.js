@@ -28,7 +28,7 @@ const getData = async (req, res) => {
             },
         });
     } catch (error) {
-        respondError(res, req, 500, processName, error);
+        respondError(res, req, error.httpCode || 500, processName, error);
     }
 };
 

@@ -1,7 +1,7 @@
 const { STATUS_ACTIVE, STATUS_REJECTED } = require('../../constants/statusType');
 const { ACTION_CREATE, ACTION_UPDATE, ACTION_DELETE } = require('../../constants/actionType');
 const { filterValidFields } = require('../../helpers/database/dataSanitizer');
-const routeRepository = require('../../repositories/routeRepository');
+const bankRepository = require('../../repositories/bankRepository');
 const { HttpError } = require('../../helpers/response/responseHandler');
 
 /**
@@ -42,10 +42,10 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
     switch (actionType) {
         case ACTION_CREATE:
             if (isApprove) {
-                return await routeRepository.updateStatus(entityId, STATUS_ACTIVE, requestedBy, client);
+                return await bankRepository.updateStatus(entityId, STATUS_ACTIVE, requestedBy, client);
             }
             if (isReject) {
-                return await routeRepository.deleteData(entityId, client);
+                return await bankRepository.deleteData(entityId, client);
             }
             break;
 
@@ -53,7 +53,7 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
         case ACTION_DELETE:
             if (isApprove) {
                 const newData = prepareUpdatePayload(changes?.new, requestedBy, STATUS_ACTIVE);
-                return await routeRepository.updateData(entityId, newData, client);
+                return await bankRepository.updateData(entityId, newData, client);
             }
 
             if (isReject) {
@@ -61,7 +61,7 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
                     throw new HttpError('Missing rollback data (changes.old)', 400);
                 }
                 const rollbackData = prepareUpdatePayload(changes.old, requestedBy, changes.old?.status);
-                return await routeRepository.updateData(entityId, rollbackData, client);
+                return await bankRepository.updateData(entityId, rollbackData, client);
             }
             break;
 

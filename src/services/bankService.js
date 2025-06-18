@@ -1,13 +1,13 @@
 const pool = require('../configs/db');
 const approveService = require('./approveService');
-const routeRepository = require('../repositories/routeRepository');
+const bankRepository = require('../repositories/bankRepository');
 const { logData } = require("../helpers/logger");
 const buildApprovalPayload = require('../helpers/approval/buildApprovalPayload');
 const { handleServiceError, HttpError } = require('../helpers/response/responseHandler');
 
 const getData = async (page, limit, formattedFilters = [], processName) => {
     try {
-        const result = await routeRepository.getData(page, limit, formattedFilters);
+        const result = await bankRepository.getData(page, limit, formattedFilters);
         logData({
             level: 'debug',
             processName,
@@ -21,7 +21,7 @@ const getData = async (page, limit, formattedFilters = [], processName) => {
 
 const getDataById = async (id, processName) => {
     try {
-        const result = await routeRepository.getDataById(id);
+        const result = await bankRepository.getDataById(id);
         if (!result) {
             throw new HttpError(`Data with ID: ${id} not found`, 404);
         }
@@ -36,7 +36,7 @@ const insertData = async (data, approvalInfo, processName) => {
 
     try {
         await client.query('BEGIN');
-        const insertedData = await routeRepository.insertData(data, client);
+        const insertedData = await bankRepository.insertData(data, client);
         const approvalPayload = buildApprovalPayload(
             approvalInfo.entityNameApproval,
             insertedData.id,
@@ -66,25 +66,31 @@ const updateData = async (id, newData, approvalInfo, processName) => {
     try {
         await client.query('BEGIN');
 
-        const oldData = await routeRepository.getDataById(id, client);
+        const oldData = await bankRepository.getDataById(id, client);
         if (!oldData) {
             throw new HttpError(`Data with ID: ${id} not found`, 404);
         }
+
+        const targetStatus = newData?.status;
 
         const approvalPayload = buildApprovalPayload(
             approvalInfo.entityNameApproval,
             id,
             approvalInfo.actionTypeApproval,
             approvalInfo.requestedBy,
-            oldData, 
-            newData       
+            { ...oldData, status: oldData.status }, 
+            newData
         );
 
         if (!approvalPayload) {
             throw new HttpError(`No changes detected. Nothing to update.`, 400);
         }
 
-        await routeRepository.updateStatus(id, approvalInfo.pendingStatus, approvalInfo.requestedBy, client);
+        if (targetStatus !== undefined) {
+            approvalPayload.changes.new.status = targetStatus;
+        }
+
+        await bankRepository.updateStatus(id, approvalInfo.pendingStatus, approvalInfo.requestedBy, client);
         await approveService.insertApproval(approvalPayload, approvalInfo.pendingStatus, client);
 
         await client.query('COMMIT');
@@ -102,7 +108,7 @@ const deleteData = async (id, requestedBy, pendingStatus, approvalInfo, processN
     try {
         await client.query('BEGIN');
 
-        const oldData = await routeRepository.getDataById(id, client);
+        const oldData = await bankRepository.getDataById(id, client);
         if (!oldData) {
             throw new HttpError(`Data with ID: ${id} not found`, 404);
         }
@@ -116,7 +122,7 @@ const deleteData = async (id, requestedBy, pendingStatus, approvalInfo, processN
             {}
         );
 
-        await routeRepository.updateStatus(id, pendingStatus, requestedBy, client);
+        await bankRepository.updateStatus(id, pendingStatus, requestedBy, client);
         await approveService.insertApproval(approvalPayload, pendingStatus, client);
 
         await client.query('COMMIT');

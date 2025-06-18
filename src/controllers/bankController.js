@@ -1,6 +1,6 @@
 const { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, ACTION_DELETE } = require('../constants/actionType');
 const { STATUS_PENDING } = require('../constants/statusType');
-const routeService = require('../services/routeService');
+const bankService = require('../services/bankService');
 const checkPermission = require('../helpers/auth/checkPermission');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
 const getPaginationParams = require('../utils/pagination');
@@ -10,8 +10,6 @@ const { convertFilterFieldsToSnakeCase } = require('../helpers/database/camelToS
 const getProcessName = (req) => req.routeConfig?.name || 'UnknownProcess';
 
 const getData = async (req, res) => {
-    req.body = req.body || {};
-    
     const processName = getProcessName(req);
     if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_READ, processName)) return;
 
@@ -20,7 +18,7 @@ const getData = async (req, res) => {
     const formattedFilters = convertFilterFieldsToSnakeCase(filters);
 
     try {
-        const result = await routeService.getData(page, limit, formattedFilters, processName);
+        const result = await bankService.getData(page, limit, formattedFilters, processName);
         const formattedData = snakeToCamelArray(result.data);
         respondSuccess(res, req, 200, processName, {
             data: formattedData,
@@ -41,7 +39,7 @@ const getDataById = async (req, res) => {
     const id = parseInt(req.params.id);
 
     try {
-        const result = await routeService.getDataById(id, processName);
+        const result = await bankService.getDataById(id, processName);
         const formattedData = snakeToCamelObject(result);
         respondSuccess(res, req, 200, processName, formattedData);
     } catch (error) {
@@ -53,15 +51,15 @@ const insertData = async (req, res) => {
     const processName = getProcessName(req);
     if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_CREATE, processName)) return;
 
-    const entityNameApproval = 'routes';
+    const entityNameApproval = 'banks';
     const actionTypeApproval = ACTION_CREATE; 
     const pendingStatus = STATUS_PENDING;
     const requestedBy = req.user?.id || 1;
-    const { name, path, method, isProtected, internal, description, menuId, actionType } = req.body;
-    const data = { name, path, method, isProtected, internal, description, menuId, actionType, requestedBy };
+    const { bankCode, bankSwift, name, description } = req.body;
+    const data = { bankCode, bankSwift, name, description, requestedBy };
 
     try {
-        await routeService.insertData(
+        await bankService.insertData(
             data,
             { entityNameApproval, actionTypeApproval, pendingStatus, requestedBy },
             processName
@@ -76,16 +74,16 @@ const updateData = async (req, res) => {
     const processName = getProcessName(req);
     if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_UPDATE, processName)) return;
 
-    const entityNameApproval = 'routes';
+    const entityNameApproval = 'banks';
     const actionTypeApproval = ACTION_UPDATE;
     const pendingStatus = STATUS_PENDING;
     const id = parseInt(req.params.id);
     const requestedBy = req.user?.id || 1;
-    const { name, path, method, isProtected, internal, description, menuId, actionType, status } = req.body;
-    const newData = { name, path, method, isProtected, internal, description, menuId, actionType, status };
+    const { bankCode, bankSwift, name, description, status } = req.body;
+    const newData = { bankCode, bankSwift, name, description, status };
 
     try {
-        await routeService.updateData(
+        await bankService.updateData(
             id,
             newData,
             { entityNameApproval, actionTypeApproval, pendingStatus, requestedBy },
@@ -101,14 +99,14 @@ const deleteData = async (req, res) => {
     const processName = getProcessName(req);
     if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_DELETE, processName)) return;
 
-    const entityNameApproval = 'routes';
+    const entityNameApproval = 'banks';
     const actionTypeApproval = ACTION_DELETE;
     const pendingStatus = STATUS_PENDING;
     const id = parseInt(req.params.id);
     const requestedBy = req.user?.id || 1;
 
     try {
-        await routeService.deleteData(
+        await bankService.deleteData(
             id,
             requestedBy,
             pendingStatus,
