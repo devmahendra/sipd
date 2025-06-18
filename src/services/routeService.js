@@ -71,17 +71,23 @@ const updateData = async (id, newData, approvalInfo, processName) => {
             throw new HttpError(`Data with ID: ${id} not found`, 404);
         }
 
+        const targetStatus = newData?.status;
+
         const approvalPayload = buildApprovalPayload(
             approvalInfo.entityNameApproval,
             id,
             approvalInfo.actionTypeApproval,
             approvalInfo.requestedBy,
-            oldData, 
-            newData       
+            { ...oldData, status: oldData.status }, 
+            newData
         );
 
         if (!approvalPayload) {
             throw new HttpError(`No changes detected. Nothing to update.`, 400);
+        }
+
+        if (targetStatus !== undefined) {
+            approvalPayload.changes.new.status = targetStatus;
         }
 
         await routeRepository.updateStatus(id, approvalInfo.pendingStatus, approvalInfo.requestedBy, client);

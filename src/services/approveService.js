@@ -19,6 +19,18 @@ const getData = async (page, limit, formattedFilters = [], processName) => {
     }
 };
 
+const getDataById = async (id, processName) => {
+    try {
+        const result = await approveRepository.getDataByIdWithoutStatus(id);
+        if (!result) {
+            throw new HttpError(`Data with ID: ${id} not found`, 404);
+        }
+        return result; 
+    } catch (error) {
+        handleServiceError(error, processName);
+    }
+};
+
 const insertApproval = async (data, pendingStatus, client) => {
     const processName = 'INSERT_APPROVAL';
     const approvalData = { ...data, pendingStatus};
@@ -90,6 +102,7 @@ const approveData = async (approvalId, approvedBy, status, processName) => {
 
 module.exports = {
     getData,
+    getDataById,
     insertApproval,
     approveData,
 };

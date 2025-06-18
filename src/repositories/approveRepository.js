@@ -36,6 +36,14 @@ const getData = async (page, limit, formattedFilters = []) => {
     }
 };
 
+const getDataByIdWithoutStatus = async (id) => {
+    const query = `SELECT * FROM approvals WHERE id = $1`;
+    const params = [id];
+
+    const { rows } = await pool.query(query, params);
+    return rows[0];
+};
+
 const getDataById = async (id, status, client) => {
     const { rows } = await client.query(`SELECT * FROM approvals WHERE id = $1 AND status <> $2`, [id, status]);
     return rows[0];
@@ -67,6 +75,7 @@ const approveData = async (id, approvedBy, status, client) => {
 
 module.exports = { 
     getData,
+    getDataByIdWithoutStatus,
     getDataById,
     insertData,
     approveData

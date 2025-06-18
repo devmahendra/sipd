@@ -5,20 +5,20 @@ const filterSchema = Joi.object({
     field: Joi.string().required(),
   
     operator: Joi.string()
-      .valid('ilike', '=', '>', '<', '>=', '<=', 'between')
-      .required(),
+        .valid('ilike', '=', '>', '<', '>=', '<=', 'between')
+        .required(),
   
     value: Joi.alternatives()
-      .conditional('operator', {
+        .conditional('operator', {
         is: 'between',
         then: Joi.array().length(2).items(
-          Joi.alternatives().try(Joi.string(), Joi.number(), Joi.date())
+            Joi.alternatives().try(Joi.string(), Joi.number(), Joi.date())
         ).required(),
         otherwise: Joi.alternatives().try(
-          Joi.string(),
-          Joi.number(),
-          Joi.boolean(),
-          Joi.date()
+            Joi.string(),
+            Joi.number(),
+            Joi.boolean(),
+            Joi.date()
         ).required()
       })
 });
@@ -31,17 +31,23 @@ exports.getDataSchema = {
     }),
 };
 
+exports.getDataIdSchema = {
+    params: Joi.object({
+        id: Joi.number().integer().min(1).required(),
+    }),
+};
+
 exports.updateDataSchema = {
-  params: Joi.object({
-    id: Joi.number().integer().min(1).required(),
-  }),
-  body: Joi.object({
-      status: Joi.number().integer().min(1).valid(STATUS_ACTIVE, STATUS_REJECTED).required(),
-  }),
+    params: Joi.object({
+        id: Joi.number().integer().min(1).required(),
+    }),
+    body: Joi.object({
+        status: Joi.number().integer().min(1).valid(STATUS_ACTIVE, STATUS_REJECTED).required(),
+    }),
 };
 
 exports.deleteDataSchema = {
-  params: Joi.object({
-    id: Joi.number().integer().min(1).required(),
-  }),
+    params: Joi.object({
+        id: Joi.number().integer().min(1).required(),
+    }),
 };

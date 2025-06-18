@@ -3,7 +3,7 @@ const approveService = require('../services/approveService');
 const checkPermission = require('../helpers/auth/checkPermission');
 const getPaginationParams = require('../utils/pagination');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
-const { snakeToCamelArray } = require('../helpers/database/snakeToCamel');
+const { snakeToCamelArray, snakeToCamelObject } = require('../helpers/database/snakeToCamel');
 const { convertFilterFieldsToSnakeCase } = require('../helpers/database/camelToSnake');
 
 const getProcessName = (req) => req.routeConfig?.name || 'UnknownProcess';
@@ -32,6 +32,20 @@ const getData = async (req, res) => {
     }
 };
 
+const getDataById = async (req, res) => {
+    const processName = getProcessName(req);
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_READ, processName)) return;
+    const id = parseInt(req.params.id);
+
+    try {
+        const result = await approveService.getDataById(id, processName);
+        const formattedData = snakeToCamelObject(result);
+        respondSuccess(res, req, 200, processName, formattedData);
+    } catch (error) {
+        respondError(res, req, error.httpCode || 500, processName, error);
+    }
+};
+
 const approveData = async (req, res) => {
     if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_UPDATE)) return;
 
@@ -51,5 +65,6 @@ const approveData = async (req, res) => {
 
 module.exports = { 
     getData,
+    getDataById,
     approveData
 };

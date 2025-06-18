@@ -10,6 +10,7 @@ module.exports = {
     DELETE_ROUTE: routeSchema.deleteDataSchema,
     
     GET_APPROVE: approveSchema.getData,
+    GET_APPROVE_ID: approveSchema.getDataIdSchema,
     UPDATE_APPROVE: approveSchema.updateDataSchema,
 
     GET_BANK: bankSchema.getDataSchema,

@@ -10,6 +10,7 @@ module.exports = {
     DELETE_ROUTE: routeController.deleteData,
     
     GET_APPROVE: approveController.getData,
+    GET_APPROVE_ID: approveController.getDataById,
     UPDATE_APPROVE: approveController.approveData,
 
     GET_BANK: bankController.getData,
