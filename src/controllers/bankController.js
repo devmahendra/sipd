@@ -1,7 +1,7 @@
 const { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, ACTION_DELETE } = require('../constants/actionType');
 const { STATUS_PENDING } = require('../constants/statusType');
 const bankService = require('../services/bankService');
-const checkPermission = require('../helpers/auth/checkPermission');
+const { checkPermission } = require('../helpers/auth/checkPermission');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
 const getPaginationParams = require('../utils/pagination');
 const { snakeToCamelArray, snakeToCamelObject } = require('../helpers/database/snakeToCamel');

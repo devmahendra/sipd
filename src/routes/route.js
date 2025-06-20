@@ -18,7 +18,7 @@ module.exports = async function initializeRoutes(app) {
             req.routeConfig = route;
             req.routeId = route.id;
             req.routeName = route.name;
-            req.menuId = route.menu_id;
+            req.menuIds = route.menu_ids;
             next();
         },
         ];

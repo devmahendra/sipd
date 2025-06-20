@@ -1,7 +1,7 @@
 const { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, ACTION_DELETE } = require('../constants/actionType');
 const { STATUS_PENDING } = require('../constants/statusType');
 const routeService = require('../services/routeService');
-const checkPermission = require('../helpers/auth/checkPermission');
+const { checkPermission } = require('../helpers/auth/checkPermission');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
 const getPaginationParams = require('../utils/pagination');
 const { snakeToCamelArray, snakeToCamelObject } = require('../helpers/database/snakeToCamel');
@@ -57,8 +57,8 @@ const insertData = async (req, res) => {
     const actionTypeApproval = ACTION_CREATE; 
     const pendingStatus = STATUS_PENDING;
     const requestedBy = req.user?.id || 1;
-    const { name, path, method, isProtected, internal, description, menuId, actionType } = req.body;
-    const data = { name, path, method, isProtected, internal, description, menuId, actionType, requestedBy };
+    const { name, path, method, isProtected, internal, description, actionType } = req.body;
+    const data = { name, path, method, isProtected, internal, description, actionType, requestedBy };
 
     try {
         await routeService.insertData(
@@ -81,8 +81,8 @@ const updateData = async (req, res) => {
     const pendingStatus = STATUS_PENDING;
     const id = parseInt(req.params.id);
     const requestedBy = req.user?.id || 1;
-    const { name, path, method, isProtected, internal, description, menuId, actionType, status } = req.body;
-    const newData = { name, path, method, isProtected, internal, description, menuId, actionType, status };
+    const { name, path, method, isProtected, internal, description, actionType, status } = req.body;
+    const newData = { name, path, method, isProtected, internal, description, actionType, status };
 
     try {
         await routeService.updateData(

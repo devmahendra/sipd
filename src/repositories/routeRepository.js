@@ -2,15 +2,19 @@ const pool = require('../configs/db');
 const { camelToSnake } = require('../helpers/database/camelToSnake');
 const { buildWhereClause } = require('../helpers/database/queryBuilder');
 
-const getRoutes = async () => {
+const getRoutes = async (status) => {
     const query = `
-        SELECT id, name, path, method, description, is_protected, internal, menu_id, action_type 
-        FROM routes 
-        WHERE status = '2'
+        SELECT 
+            r.*, 
+            COALESCE(json_agg(mr.menu_id) FILTER (WHERE mr.menu_id IS NOT NULL), '[]') AS menu_ids
+        FROM routes r
+        LEFT JOIN menu_routes mr ON mr.route_id = r.id
+        WHERE r.status = $1
+        GROUP BY r.id
     `;
-  
-    const { rows } = await pool.query(query);
-    return rows;
+    const params = [status];
+    const rows = await pool.query(query, params);
+    return rows.rows;
 };
 
 const getDataById = async (id, client = null) => {
@@ -57,15 +61,15 @@ const getData = async (page, limit, formattedFilters = []) => {
     }
 };
 
-const insertData = async ({ name, path, method, isProtected, internal, description, menuId, actionType, requestedBy, status = 1 }, client) => {
+const insertData = async ({ name, path, method, isProtected, internal, description, actionType, requestedBy, status = 1 }, client) => {
     const query = `
         INSERT INTO routes 
-        (name, path, method, is_protected, internal, description, menu_id, action_type, created_by, status)
+        (name, path, method, is_protected, internal, description, action_type, created_by, status)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *;
     `;
     
-    const values = [name, path, method, isProtected, internal, description, menuId, actionType, requestedBy, status];
+    const values = [name, path, method, isProtected, internal, description, actionType, requestedBy, status];
     const { rows } = await client.query(query, values);
     return rows[0];
 };

@@ -40,7 +40,7 @@ const insertApproval = async (data, pendingStatus, client) => {
         logData({
             level: 'debug',
             processName,
-            data: 'success insert approval data',
+            data: 'Success insert approval data',
         });
         return insertData;
     } catch (error) {

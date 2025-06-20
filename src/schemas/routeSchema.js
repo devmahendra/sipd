@@ -46,7 +46,6 @@ exports.insertDataSchema = {
         isProtected: Joi.boolean().required(),
         internal: Joi.boolean().required(),
         description: Joi.string().allow('', null).optional(),
-        menuId: Joi.number().integer().allow(null).optional(),
         actionType: Joi.string().valid(...ACTIONS).required()
     }),
 };
@@ -62,7 +61,6 @@ exports.updateDataSchema = {
         isProtected: Joi.boolean().optional().allow(null),
         internal: Joi.boolean().optional().allow(null),
         description: Joi.string().allow('', null).optional(),
-        menuId: Joi.number().integer().allow(null).optional(),
         actionType: Joi.string().valid(...ACTIONS).optional().allow('', null),
         status: Joi.number().valid(...STATUSES).optional().allow(null),
     }),

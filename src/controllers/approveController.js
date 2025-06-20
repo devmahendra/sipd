@@ -1,6 +1,6 @@
 const { ACTION_READ, ACTION_UPDATE } = require('../constants/actionType');
 const approveService = require('../services/approveService');
-const checkPermission = require('../helpers/auth/checkPermission');
+const { checkPermission, checkApprovalPermission } = require('../helpers/auth/checkPermission');
 const getPaginationParams = require('../utils/pagination');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
 const { snakeToCamelArray, snakeToCamelObject } = require('../helpers/database/snakeToCamel');
@@ -9,7 +9,7 @@ const { convertFilterFieldsToSnakeCase } = require('../helpers/database/camelToS
 const getProcessName = (req) => req.routeConfig?.name || 'UnknownProcess';
 
 const getData = async (req, res) => {
-    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_READ)) return;
+    if (process.env.NODE_ENV === 'production' && !checkApprovalPermission(ACTION_READ)(req, res, () => {})) return;
 
     const processName = getProcessName(req);
     const { page, limit } = getPaginationParams(req);
