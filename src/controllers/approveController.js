@@ -5,6 +5,7 @@ const getPaginationParams = require('../utils/pagination');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
 const { snakeToCamelArray, snakeToCamelObject } = require('../helpers/database/snakeToCamel');
 const { convertFilterFieldsToSnakeCase } = require('../helpers/database/camelToSnake');
+const { maskSensitive } = require('../utils/mask');
 
 const getProcessName = (req) => req.routeConfig?.name || 'UnknownProcess';
 
@@ -18,7 +19,13 @@ const getData = async (req, res) => {
 
     try {
         const result = await approveService.getData(page, limit, formattedFilters, processName);
-        const formattedData = snakeToCamelArray(result.data);
+        const formattedData = snakeToCamelArray(result.data).map(item => ({
+            ...item,
+            changes: {
+                new: maskSensitive(item.changes?.new),
+                old: maskSensitive(item.changes?.old),
+            }
+        }));
         respondSuccess(res, req, 200, processName, {
             data: formattedData,
             pagination: {
@@ -39,7 +46,13 @@ const getDataById = async (req, res) => {
 
     try {
         const result = await approveService.getDataById(id, processName);
-        const formattedData = snakeToCamelObject(result);
+        const formattedData = snakeToCamelObject({
+            ...result,
+            changes: {
+                new: maskSensitive(result.changes?.new),
+                old: maskSensitive(result.changes?.old),
+            }
+        });
         respondSuccess(res, req, 200, processName, formattedData);
     } catch (error) {
         respondError(res, req, error.httpCode || 500, processName, error);

@@ -1,6 +1,7 @@
 const routeSchema = require("../schemas/routeSchema");
 const approveSchema = require("../schemas/approveSchema");
 const bankSchema = require("../schemas/bankSchema");
+const userSchema = require("../schemas/userSchema");
 
 module.exports = {
     GET_ROUTE: routeSchema.getDataSchema,
@@ -18,4 +19,10 @@ module.exports = {
     CREATE_BANK: bankSchema.insertDataSchema,
     UPDATE_BANK: bankSchema.updateDataSchema,
     DELETE_BANK: bankSchema.deleteDataSchema,
+
+    GET_USER: userSchema.getDataSchema,
+    GET_USER_ID: userSchema.getDataIdSchema,
+    CREATE_USER: userSchema.insertDataSchema,
+    UPDATE_USER: userSchema.updateDataSchema,
+    DELETE_USER: userSchema.deleteDataSchema,
 };

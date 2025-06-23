@@ -10,14 +10,13 @@ const getData = async (page, limit, formattedFilters = []) => {
         const paginationValues = [...filterValues, limit, offset];
 
         const dataQuery = `
-            SELECT * FROM banks
+            SELECT * FROM vw_user_details
             ${whereClause}
-            ORDER BY created_at ASC
             LIMIT $${filterValues.length + 1} OFFSET $${filterValues.length + 2}
         `;
 
         const countQuery = `
-            SELECT COUNT(*) FROM banks
+            SELECT COUNT(*) FROM users
             ${whereClause}
         `;
 
@@ -38,7 +37,7 @@ const getData = async (page, limit, formattedFilters = []) => {
 };
 
 const getDataById = async (id, client = null) => {
-    const query = `SELECT * FROM banks WHERE id = $1 AND deleted_at IS NULL`;
+    const query = `SELECT * FROM vw_user_details WHERE user_id = $1`;
     const params = [id];
 
     const db = client || pool;
@@ -46,27 +45,60 @@ const getDataById = async (id, client = null) => {
     return rows[0];
 };
 
-const insertData = async ({ bankCode, bankSwift, name, description, requestedBy, status}, client) => {
+const insertUser = async (client, { username, password, requestedBy, status }) => {
     const query = `
-        INSERT INTO banks 
-        (bank_code, bank_swift, name, description, created_by, status)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO users (username, password, created_by, status)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, username, created_at;
+    `;
+    const values = [username, password, requestedBy, status];
+    const result = await client.query(query, values);
+    return result.rows[0];
+};
+
+const insertUserProfile = async (client, { userId, firstName, lastName, email, phoneNumber }) => {
+    const query = `
+        INSERT INTO user_profile (user_id, first_name, last_name, email, phone_number)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, user_id, first_name, last_name, email, phone_number;
+    `;
+    const values = [userId, firstName, lastName, email, phoneNumber];
+    const result = await client.query(query, values);
+    return result.rows[0];
+};
+
+const insertUserBranch = async (client, { userId, branchId }) => {
+    const query = `
+        INSERT INTO user_branch (user_id, branch_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id, branch_id) DO NOTHING
         RETURNING *;
     `;
-    
-    const values = [bankCode, bankSwift, name, description, requestedBy, status];
-    const { rows } = await client.query(query, values);
-    return rows[0];
+    const values = [userId, branchId];
+    const result = await client.query(query, values);
+    return result.rows[0];
+};
+
+const insertUserRole = async (client, { userId, roleId }) => {
+    const query = `
+        INSERT INTO user_roles (user_id, role_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id, role_id) DO NOTHING
+        RETURNING *;
+    `;
+    const values = [userId, roleId];
+    const result = await client.query(query, values);
+    return result.rows[0];
 };
 
 const deleteData = async (id, client) => {
-    const query = `DELETE FROM banks WHERE id = $1`;
+    const query = `DELETE FROM users WHERE id = $1`;
     await client.query(query, [id]);
 };
 
 const updateStatus = async (id, status, updatedBy, client) => {
     const query = `
-        UPDATE banks
+        UPDATE users
         SET status = $1,
             updated_at = NOW(),
             updated_by = $2
@@ -90,7 +122,7 @@ const updateData = async (id, data, client) => {
         .concat('updated_at = NOW()')
         .join(', ');
 
-    const query = `UPDATE banks SET ${setClause} WHERE id = $${fields.length + 1}`;
+    const query = `UPDATE users SET ${setClause} WHERE id = $${fields.length + 1}`;
 
     await client.query(query, [...values, id]);
 };
@@ -99,7 +131,10 @@ const updateData = async (id, data, client) => {
 module.exports = { 
     getDataById,
     getData,
-    insertData,
+    insertUser,
+    insertUserProfile,
+    insertUserBranch,
+    insertUserRole,
     deleteData,
     updateStatus,
     updateData

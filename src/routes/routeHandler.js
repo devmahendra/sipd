@@ -1,6 +1,7 @@
 const routeController = require("../controllers/routeController");
 const approveController = require("../controllers/approveController");
 const bankController = require("../controllers/bankController");
+const userController = require("../controllers/userController");
 
 module.exports = {
     GET_ROUTE: routeController.getData,
@@ -18,4 +19,10 @@ module.exports = {
     CREATE_BANK: bankController.insertData,
     UPDATE_BANK: bankController.updateData,
     DELETE_BANK: bankController.deleteData,
+
+    GET_USER: userController.getData,
+    GET_USER_ID: userController.getDataById,
+    CREATE_USER: userController.insertData,
+    UPDATE_USER: userController.updateData,
+    DELETE_USER: userController.deleteData,
 };

@@ -39,11 +39,15 @@ exports.getDataIdSchema = {
 
 exports.insertDataSchema = {
     body: Joi.object({
-        name: Joi.string().max(50).required(),
-        bankCode: Joi.string().min(1).max(3).required(),
-        bankSwift: Joi.string().min(1).max(20).required(),
-        description: Joi.string().allow('', null).optional(),
-    }),
+        username: Joi.string().max(50).required(),
+        firstName: Joi.string().max(100).optional(),
+        lastName: Joi.string().max(100).allow('', null).optional(),
+        email: Joi.string().email().max(100).required(),
+        phoneNumber: Joi.string().max(20).allow('', null).optional(),
+        avatarUrl: Joi.string().allow('', null).optional(),
+        branchId: Joi.number().integer().min(1).required(),
+        roleId: Joi.number().integer().min(1).required()
+      })
 };
 
 exports.updateDataSchema = {
@@ -51,10 +55,15 @@ exports.updateDataSchema = {
         id: Joi.number().integer().min(1).required(),
     }),
     body: Joi.object({
-        name: Joi.string().max(50).allow('', null).optional(),
-        bankCode: Joi.string().min(1).max(3).allow('', null).optional(), 
-        bankSwift: Joi.string().min(1).max(20).allow('', null).optional(),
-        description: Joi.string().allow('', null).optional(),
+        username: Joi.string().max(50).allow('', null).optional(),
+        password: Joi.string().min(6).max(100).allow('', null).optional(),
+        firstName: Joi.string().max(100).allow('', null).optional(),
+        lastName: Joi.string().max(100).allow('', null).optional(),
+        email: Joi.string().email().max(100).allow('', null).optional(),
+        phoneNumber: Joi.string().max(20).allow('', null).optional(),
+        avatarUrl: Joi.string().allow('', null).optional(),
+        branchId: Joi.number().integer().min(1).required(),
+        roleId: Joi.number().integer().min(1).required(),
         status: Joi.number().valid(...STATUSES).optional().allow(null),
     }),
 };
