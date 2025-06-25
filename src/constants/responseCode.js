@@ -5,6 +5,12 @@ const responseCodes = {
         MESSAGE: "Successful",
         STATUS: "Success",
     },
+    SUCCESS_MULTI: {
+        CODE: "00",
+        HTTP_CODE: 207,
+        MESSAGE: "Multiple Status response",
+        STATUS: "Success",
+    },
     MISSING_FIELDS: {
         CODE: "40",
         HTTP_CODE: 400,

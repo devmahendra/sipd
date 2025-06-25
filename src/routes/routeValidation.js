@@ -13,6 +13,7 @@ module.exports = {
     GET_APPROVE: approveSchema.getData,
     GET_APPROVE_ID: approveSchema.getDataIdSchema,
     UPDATE_APPROVE: approveSchema.updateDataSchema,
+    B_UPDATE_APPROVE: approveSchema.updateDataBulkSchema,
 
     GET_BANK: bankSchema.getDataSchema,
     GET_BANK_ID: bankSchema.getDataIdSchema,
@@ -23,6 +24,9 @@ module.exports = {
     GET_USER: userSchema.getDataSchema,
     GET_USER_ID: userSchema.getDataIdSchema,
     CREATE_USER: userSchema.insertDataSchema,
+    B_CREATE_USER: userSchema.insertDataBulkSchema,
     UPDATE_USER: userSchema.updateDataSchema,
+    B_UPDATE_USER: userSchema.updateDataBulkSchema,
     DELETE_USER: userSchema.deleteDataSchema,
+    B_DELETE_USER: userSchema.deleteDataBulkSchema,
 };

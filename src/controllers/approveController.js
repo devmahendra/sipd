@@ -3,6 +3,7 @@ const approveService = require('../services/approveService');
 const { checkPermission, checkApprovalPermission } = require('../helpers/auth/checkPermission');
 const getPaginationParams = require('../utils/pagination');
 const { respondSuccess, respondError } = require('../helpers/response/responseHandler');
+const { responseBulk } = require('../helpers/response/responseHandlerBulk');
 const { snakeToCamelArray, snakeToCamelObject } = require('../helpers/database/snakeToCamel');
 const { convertFilterFieldsToSnakeCase } = require('../helpers/database/camelToSnake');
 const { maskSensitive } = require('../utils/mask');
@@ -75,9 +76,30 @@ const approveData = async (req, res) => {
     }
 }
 
+const approveDataBulk = async (req, res) => {
+    const processName = getProcessName(req);
+    if (process.env.NODE_ENV === 'production' && !checkPermission(req, res, ACTION_UPDATE, processName)) return;
+
+    const approvedBy = req.user?.id || 1;
+    const approvalArray = req.body;
+
+    return responseBulk({
+        req,
+        res,
+        processName,
+        dataArray: approvalArray,
+        successMessage: "Bulk approval completed successfully",
+        callbackFn: async ({ id, status }, _index, client) => {
+            await approveService.approveDataBulk(id, approvedBy, status, client, processName);
+        },
+    });
+};
+
+
 
 module.exports = { 
     getData,
     getDataById,
-    approveData
+    approveData,
+    approveDataBulk
 };

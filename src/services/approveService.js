@@ -100,9 +100,41 @@ const approveData = async (approvalId, approvedBy, status, processName) => {
     }
 };
 
+const approveDataBulk = async (approvalId, approvedBy, status, client, processName) => {
+    const getData = await approveRepository.getDataById(approvalId, status, client);
+    if (!getData) {
+        throw new HttpError(`Approval ID: ${approvalId} not found or already processed`, 404);
+    }
+
+    const {
+        entity_id: entityId,
+        entity_name: entityName,
+        changes,
+        action_type: actionType,
+        requested_by: requestedBy,
+    } = getData;
+
+    const entityService = entityServiceMap[entityName];
+    if (!entityService || typeof entityService.applyApproval !== 'function') {
+        throw new HttpError(`Unhandled entity type: ${entityName}`, 404);
+    }
+
+    await entityService.applyApproval({ entityId, changes, status, actionType, requestedBy, client });
+
+    await approveRepository.approveData(approvalId, approvedBy, status, client);
+
+    logData({
+        level: 'debug',
+        processName,
+        data: `Approved ${entityName} ID: ${entityId} by user: ${approvedBy}`,
+    });
+};
+
+
 module.exports = {
     getData,
     getDataById,
     insertApproval,
     approveData,
+    approveDataBulk,
 };

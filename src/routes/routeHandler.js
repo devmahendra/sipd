@@ -13,6 +13,7 @@ module.exports = {
     GET_APPROVE: approveController.getData,
     GET_APPROVE_ID: approveController.getDataById,
     UPDATE_APPROVE: approveController.approveData,
+    B_UPDATE_APPROVE: approveController.approveDataBulk,
 
     GET_BANK: bankController.getData,
     GET_BANK_ID: bankController.getDataById,
@@ -23,6 +24,9 @@ module.exports = {
     GET_USER: userController.getData,
     GET_USER_ID: userController.getDataById,
     CREATE_USER: userController.insertData,
+    B_CREATE_USER: userController.insertDataBulk,
     UPDATE_USER: userController.updateData,
+    B_UPDATE_USER: userController.updateDataBulk,
     DELETE_USER: userController.deleteData,
+    B_DELETE_USER: userController.deleteDataBulk,
 };

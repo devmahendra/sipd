@@ -46,6 +46,20 @@ exports.updateDataSchema = {
     }),
 };
 
+exports.updateDataBulkSchema = {
+    body: Joi.array()
+      .items(
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+          status: Joi.number()
+            .valid(STATUS_ACTIVE, STATUS_REJECTED)
+            .required(),
+        })
+      )
+      .max(100)
+      .required(),
+};
+
 exports.deleteDataSchema = {
     params: Joi.object({
         id: Joi.number().integer().min(1).required(),

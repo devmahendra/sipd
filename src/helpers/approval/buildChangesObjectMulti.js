@@ -2,13 +2,23 @@ function buildChangesObjectMulti(oldData = {}, newData = {}) {
     const excludedFields = ['requestedBy', 'entityName', 'actionType'];
     const changes = { old: {}, new: {} };
 
-    for (const table of Object.keys(newData)) {
+    const allTables = new Set([
+        ...Object.keys(oldData),
+        ...Object.keys(newData)
+    ]);
+
+    for (const table of allTables) {
         const oldTableData = oldData[table] || {};
         const newTableData = newData[table] || {};
         const oldChanges = {};
         const newChanges = {};
 
-        for (const key of Object.keys(newTableData)) {
+        const allFields = new Set([
+            ...Object.keys(oldTableData),
+            ...Object.keys(newTableData),
+        ]);
+
+        for (const key of allFields) {
             if (excludedFields.includes(key)) continue;
 
             const oldValue = oldTableData[key];
@@ -20,8 +30,8 @@ function buildChangesObjectMulti(oldData = {}, newData = {}) {
 
             if (bothUndefined || bothNull || bothEqual) continue;
 
-            oldChanges[key] = oldValue ?? null;
-            newChanges[key] = newValue ?? null;
+            if (oldValue !== undefined) oldChanges[key] = oldValue ?? null;
+            if (newValue !== undefined) newChanges[key] = newValue ?? null;
         }
 
         if (Object.keys(oldChanges).length > 0) {
@@ -35,5 +45,6 @@ function buildChangesObjectMulti(oldData = {}, newData = {}) {
 
     return changes;
 }
+
 
 module.exports = buildChangesObjectMulti;

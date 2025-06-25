@@ -22,6 +22,7 @@ const getData = async (req, res) => {
     try {
         const result = await routeService.getData(page, limit, formattedFilters, processName);
         const formattedData = snakeToCamelArray(result.data);
+        
         respondSuccess(res, req, 200, processName, {
             data: formattedData,
             pagination: {
@@ -58,7 +59,7 @@ const insertData = async (req, res) => {
     const pendingStatus = STATUS_PENDING;
     const requestedBy = req.user?.id || 1;
     const { name, path, method, isProtected, internal, description, actionType } = req.body;
-    const data = { name, path, method, isProtected, internal, description, actionType, requestedBy };
+    const data = { name, path, method, isProtected, internal, description, actionType };
 
     try {
         await routeService.insertData(

@@ -92,8 +92,10 @@ const insertUserRole = async (client, { userId, roleId }) => {
 };
 
 const deleteData = async (id, client) => {
-    const query = `DELETE FROM users WHERE id = $1`;
-    await client.query(query, [id]);
+    await client.query('DELETE FROM user_roles WHERE user_id = $1', [id]);
+    await client.query('DELETE FROM user_branch WHERE user_id = $1', [id]);
+    await client.query('DELETE FROM user_profile WHERE user_id = $1', [id]);
+    await client.query('DELETE FROM users WHERE id = $1', [id]);
 };
 
 const updateStatus = async (id, status, updatedBy, client) => {
@@ -127,6 +129,30 @@ const updateData = async (id, data, client) => {
     await client.query(query, [...values, id]);
 };
 
+const updateUserProfile = async (userId, data, client) => {
+    const fields = Object.keys(data);
+    const values = Object.values(data);
+
+    if (fields.length === 0) throw new Error('No fields to update');
+
+    const dbFields = fields.map(camelToSnake);
+    const setClause = dbFields
+        .map((field, i) => `${field} = $${i + 1}`)
+        .join(', ');
+
+    const query = `UPDATE user_profile SET ${setClause} WHERE user_id = $${fields.length + 1}`;
+    await client.query(query, [...values, userId]);
+};
+
+const deleteUserRoles = async (userId, client) => {
+    await client.query('DELETE FROM user_roles WHERE user_id = $1', [userId]);
+};
+
+const deleteUserBranches = async (userId, client) => {
+    await client.query('DELETE FROM user_branch WHERE user_id = $1', [userId]);
+};
+
+
 
 module.exports = { 
     getDataById,
@@ -137,5 +163,8 @@ module.exports = {
     insertUserRole,
     deleteData,
     updateStatus,
-    updateData
+    updateData,
+    updateUserProfile,
+    deleteUserRoles,
+    deleteUserBranches
  };

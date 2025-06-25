@@ -39,6 +39,9 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
     const isApprove = status === STATUS_ACTIVE;
     const isReject = status === STATUS_REJECTED;
 
+    const newChanges = changes?.new || {};
+    const oldChanges = changes?.old || {};
+
     switch (actionType) {
         case ACTION_CREATE:
             if (isApprove) {
@@ -50,18 +53,59 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
             break;
 
         case ACTION_UPDATE:
-        case ACTION_DELETE:
             if (isApprove) {
-                const newData = prepareUpdatePayload(changes?.new, requestedBy, STATUS_ACTIVE);
-                return await userRepository.updateData(entityId, newData, client);
+                if (newChanges.users) {
+                    const userPayload = prepareUpdatePayload(newChanges.users, requestedBy, STATUS_ACTIVE);
+                    await userRepository.updateData(entityId, userPayload, client);
+                }
+
+                if (newChanges.userProfile) {
+                    await userRepository.updateUserProfile(entityId, newChanges.userProfile, client);
+                }
+
+                if (newChanges.userRoles) {
+                    await userRepository.deleteUserRoles(entityId, client);
+                    await userRepository.insertUserRole(client, {
+                        userId: entityId,
+                        roleId: newChanges.userRoles.roleId
+                    });
+                }
+
+                if (newChanges.userBranch) {
+                    await userRepository.deleteUserBranches(entityId, client);
+                    await userRepository.insertUserBranch(client, {
+                        userId: entityId,
+                        branchId: newChanges.userBranch.branchId
+                    });
+                }
+
+                return;
             }
 
             if (isReject) {
-                if (!changes?.old) {
-                    throw new HttpError('Missing rollback data (changes.old)', 400);
+                if (!oldChanges.users) {
+                    throw new HttpError('Missing rollback data', 400);
                 }
-                const rollbackData = prepareUpdatePayload(changes.old, requestedBy, changes.old?.status);
-                return await userRepository.updateData(entityId, rollbackData, client);
+
+                if (oldChanges.users) {
+                    const rollback = prepareUpdatePayload(oldChanges.users, requestedBy, oldChanges.users.status);
+                    await userRepository.updateData(entityId, rollback, client);
+                }
+
+                return;
+            }
+            break;
+
+        case ACTION_DELETE:
+            if (isApprove) {
+                return await userRepository.deleteData(entityId, client);
+            }
+
+            if (isReject) {
+                const rollback = prepareUpdatePayload(oldChanges.users, requestedBy, oldChanges.users.status);
+                await userRepository.updateData(entityId, rollback, client);
+
+                return;
             }
             break;
 
@@ -69,5 +113,6 @@ const applyApproval = async ({ entityId, changes, status, actionType, requestedB
             throw new HttpError(`Unknown action type: ${actionType}`, 400);
     }
 };
+
 
 module.exports = { applyApproval };
