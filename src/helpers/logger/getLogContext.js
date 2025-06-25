@@ -8,7 +8,7 @@ function getLogContext(logObject, now, formatDate) {
     
     const requestContext = {
         requestId: addPadding(store?.get('requestId'), 36) || 'N/A',
-        sequence: currentSeq,
+        sequence: addPadding(currentSeq, 3),
         device: addPadding(logObject.device != null ? logObject.device : store?.get('device'), 5) ?? 0,
         signal: logObject.signal || store?.get('signal') || 'N',
         ip: addPadding(store?.get('ip'), 15) || 'N/A',
